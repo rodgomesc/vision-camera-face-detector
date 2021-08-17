@@ -18,11 +18,10 @@ def safeExtGet(prop, fallback) {
 }
 
 android {
-    compileSdkVersion safeExtGet('VisionCameraFaceDetector_compileSdkVersion', 29)
-    buildToolsVersion safeExtGet('VisionCameraFaceDetector_buildToolsVersion', '29.0.2')
+    compileSdkVersion safeExtGet('VisionCameraFaceDetector_compileSdkVersion', 30)
     defaultConfig {
-        minSdkVersion safeExtGet('VisionCameraFaceDetector_minSdkVersion', 16)
-        targetSdkVersion safeExtGet('VisionCameraFaceDetector_targetSdkVersion', 29)
+        minSdkVersion safeExtGet('VisionCameraFaceDetector_minSdkVersion', 21)
+        targetSdkVersion safeExtGet('VisionCameraFaceDetector_targetSdkVersion', 31)
         versionCode 1
         versionName "1.0"
 
