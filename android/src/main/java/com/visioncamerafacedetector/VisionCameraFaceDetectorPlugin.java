@@ -5,7 +5,7 @@ import android.annotation.SuppressLint;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.media.Image;
-import android.util.Log;
+
 
 import androidx.camera.core.ImageProxy;
 
@@ -20,13 +20,11 @@ import com.google.mlkit.vision.face.FaceContour;
 import com.google.mlkit.vision.face.FaceDetection;
 import com.google.mlkit.vision.face.FaceDetector;
 
-import com.facebook.react.bridge.WritableNativeMap;
 
 import com.google.mlkit.vision.face.FaceDetectorOptions;
 import com.mrousavy.camera.frameprocessor.FrameProcessorPlugin;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
+
 import java.util.List;
 
 
