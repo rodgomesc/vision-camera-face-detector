@@ -26,6 +26,7 @@ import com.google.mlkit.vision.face.FaceDetectorOptions;
 import com.mrousavy.camera.frameprocessor.FrameProcessorPlugin;
 
 import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -46,16 +47,16 @@ public class VisionCameraFaceDetectorPlugin extends FrameProcessorPlugin {
   private WritableMap processBoundingBox(Rect boundingBox) {
     WritableMap bounds = Arguments.createMap();
 
-      bounds.putInt("x", boundingBox.left);
-      bounds.putInt("y", boundingBox.top);
-      bounds.putInt("width", boundingBox.width());
-      bounds.putInt("height", boundingBox.height());
+    bounds.putInt("x", boundingBox.left);
+    bounds.putInt("y", boundingBox.top);
+    bounds.putInt("width", boundingBox.width());
+    bounds.putInt("height", boundingBox.height());
 
-      return bounds;
+    return bounds;
   }
 
 
-  private Object  processFaceContours(Face face) {
+  private WritableMap  processFaceContours(Face face) {
     // All faceContours
     int[] faceContoursTypes =
       new int[] {
@@ -75,21 +76,48 @@ public class VisionCameraFaceDetectorPlugin extends FrameProcessorPlugin {
         FaceContour.LEFT_CHEEK,
         FaceContour.RIGHT_CHEEK
       };
-    // reference https://stackoverflow.com/questions/57203678/detecting-contours-of-multiple-faces-via-firebase-ml-kit-face-detection
+
+    String[] faceContoursTypesStrings = {
+        "FACE",
+        "LEFT_EYEBROW_TOP",
+        "LEFT_EYEBROW_BOTTOM",
+        "RIGHT_EYEBROW_TOP",
+        "RIGHT_EYEBROW_BOTTOM",
+        "LEFT_EYE",
+        "RIGHT_EYE",
+        "UPPER_LIP_TOP",
+        "UPPER_LIP_BOTTOM",
+        "LOWER_LIP_TOP",
+        "LOWER_LIP_BOTTOM",
+        "NOSE_BRIDGE",
+        "NOSE_BOTTOM",
+        "LEFT_CHEEK",
+        "RIGHT_CHEEK"
+      };
+
+    WritableMap faceContoursTypesMap = Arguments.createMap();
+
     for (int i = 0; i < faceContoursTypes.length; i++) {
       FaceContour contour = face.getContour(faceContoursTypes[i]);
       List<PointF> points = contour.getPoints();
-      for (int j = 0; j < points.size(); j++) {
-        Log.d("contourPoints", Double.toString(contour.getPoints().get(j).x));
-      }
+      WritableNativeArray pointsArray = new WritableNativeArray();
 
-      // Log.d("contourType", Integer.toString((contour.getFaceContourType())));
-     // Log.d("contourPoints", contour.getPoints().get());
+
+
+      for (int j = 0; j < points.size(); j++) {
+        WritableMap currentPointsMap = Arguments.createMap();
+
+        currentPointsMap.putDouble("x", contour.getPoints().get(j).x);
+        currentPointsMap.putDouble("y", contour.getPoints().get(j).y);
+
+        pointsArray.pushMap(currentPointsMap);
+
+      }
+      faceContoursTypesMap.putArray(faceContoursTypesStrings[contour.getFaceContourType() - 1], pointsArray);
     }
 
-    //WritableMap fContours = Arguments.createMap();
-    //Log.d("faceContours", faceContours.toString());
-    return null;
+
+    return faceContoursTypesMap;
   }
 
   @SuppressLint("NewApi")
@@ -120,11 +148,11 @@ public class VisionCameraFaceDetectorPlugin extends FrameProcessorPlugin {
           map.putDouble("rightEyeOpenProbability", face.getRightEyeOpenProbability());
           map.putDouble("SmilingProbability", face.getSmilingProbability());
 
-          processFaceContours(face);
+          WritableMap contours = processFaceContours(face);
           WritableMap bounds = processBoundingBox(face.getBoundingBox());
 
-          //map.putMap("faceContours", faceContours);
           map.putMap("bounds", bounds);
+          map.putMap("contours", contours);
 
           // classifications all
           array.pushMap(map);

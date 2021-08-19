@@ -23,7 +23,9 @@ export default function App() {
   }, []);
 
   React.useEffect(() => {
-    console.log(faces);
+    if (faces.length > 0) {
+      console.log(faces[0].contours);
+    }
   }, [faces]);
 
   const frameProcessor = useFrameProcessor((frame) => {
