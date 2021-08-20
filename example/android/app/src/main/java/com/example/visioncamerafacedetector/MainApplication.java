@@ -12,6 +12,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import com.visioncamerafacedetector.VisionCameraFaceDetectorPluginPackage;
 
+
+
 import com.facebook.react.bridge.JSIModulePackage; 
 import com.swmansion.reanimated.ReanimatedJSIModulePackage; 
 
@@ -30,7 +32,9 @@ public class MainApplication extends Application implements ReactApplication {
           List<ReactPackage> packages = new PackageList(this).getPackages();
           // Packages that cannot be autolinked yet can be added manually here, for VisionCameraFaceDetectorExample:
           // packages.add(new MyReactNativePackage());
+
           packages.add(new VisionCameraFaceDetectorPluginPackage());
+          
           return packages;
         }
 

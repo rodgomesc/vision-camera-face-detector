@@ -1,10 +1,13 @@
 package com.visioncamerafacedetector;
 
 
+import static java.lang.Math.ceil;
+
 import android.annotation.SuppressLint;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.media.Image;
+import android.util.Log;
 
 
 import androidx.camera.core.ImageProxy;
@@ -12,6 +15,7 @@ import androidx.camera.core.ImageProxy;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
+import com.facebook.react.bridge.WritableNativeMap;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.mlkit.vision.common.InputImage;
@@ -40,19 +44,31 @@ public class VisionCameraFaceDetectorPlugin extends FrameProcessorPlugin {
 
   FaceDetector faceDetector = FaceDetection.getClient(options);
 
-
-
   private WritableMap processBoundingBox(Rect boundingBox) {
     WritableMap bounds = Arguments.createMap();
 
-    bounds.putInt("x", boundingBox.left);
-    bounds.putInt("y", boundingBox.top);
-    bounds.putInt("width", boundingBox.width());
-    bounds.putInt("height", boundingBox.height());
+    // Calculate offset (we need to center the overlay on the target)
+    Double offsetX =  (boundingBox.exactCenterX() - ceil(boundingBox.width())) / 2.0f;
+    Double offsetY =  (boundingBox.exactCenterY() - ceil(boundingBox.height())) / 2.0f;
+
+    Double x = boundingBox.right + offsetX;
+    Double y = boundingBox.top + offsetY;
+
+
+
+    bounds.putDouble("x", boundingBox.centerX() + (boundingBox.centerX() - x));
+    bounds.putDouble("y", boundingBox.centerY() + (y - boundingBox.centerY()));
+    bounds.putDouble("width", boundingBox.width());
+    bounds.putDouble("height", boundingBox.height());
+
+
+    bounds.putDouble("boundingCenterX", boundingBox.centerX());
+    bounds.putDouble("boundingCenterY", boundingBox.centerY());
+    bounds.putDouble("boundingExactCenterX", boundingBox.exactCenterX());
+    bounds.putDouble("boundingExactCenterY", boundingBox.exactCenterY());
 
     return bounds;
   }
-
 
   private WritableMap  processFaceContours(Face face) {
     // All faceContours
@@ -93,27 +109,23 @@ public class VisionCameraFaceDetectorPlugin extends FrameProcessorPlugin {
         "RIGHT_CHEEK"
       };
 
-    WritableMap faceContoursTypesMap = Arguments.createMap();
+    WritableMap faceContoursTypesMap = new WritableNativeMap();
 
-    for (int i = 0; i < faceContoursTypes.length; i++) {
-      FaceContour contour = face.getContour(faceContoursTypes[i]);
-      List<PointF> points = contour.getPoints();
-      WritableNativeArray pointsArray = new WritableNativeArray();
+      for (int i = 0; i < faceContoursTypesStrings.length; i++) {
+        FaceContour contour = face.getContour(faceContoursTypes[i]);
+        List<PointF> points = contour.getPoints();
+        WritableNativeArray pointsArray = new WritableNativeArray();
 
+          for (int j = 0; j < points.size(); j++) {
+            WritableMap currentPointsMap = new WritableNativeMap();
 
+            currentPointsMap.putDouble("x", points.get(j).x);
+            currentPointsMap.putDouble("y", points.get(j).y);
 
-      for (int j = 0; j < points.size(); j++) {
-        WritableMap currentPointsMap = Arguments.createMap();
-
-        currentPointsMap.putDouble("x", contour.getPoints().get(j).x);
-        currentPointsMap.putDouble("y", contour.getPoints().get(j).y);
-
-        pointsArray.pushMap(currentPointsMap);
-
+            pointsArray.pushMap(currentPointsMap);
+          }
+          faceContoursTypesMap.putArray(faceContoursTypesStrings[contour.getFaceContourType() - 1], pointsArray);
       }
-      faceContoursTypesMap.putArray(faceContoursTypesStrings[contour.getFaceContourType() - 1], pointsArray);
-    }
-
 
     return faceContoursTypesMap;
   }
@@ -121,8 +133,6 @@ public class VisionCameraFaceDetectorPlugin extends FrameProcessorPlugin {
   @SuppressLint("NewApi")
   @Override
   public Object callback(ImageProxy frame, Object[] params) {
-
-
     @SuppressLint("UnsafeOptInUsageError")
     Image mediaImage = frame.getImage();
 
@@ -132,12 +142,8 @@ public class VisionCameraFaceDetectorPlugin extends FrameProcessorPlugin {
       WritableNativeArray array = new WritableNativeArray();
       try {
         List<Face> faces = Tasks.await(task);
-
         for (Face face : faces) {
-          WritableMap map = Arguments.createMap();
-
-
-          // Log.d("boundingBox", Integer.toString(boundingBox.bottom));
+          WritableMap map =  new WritableNativeMap();
 
           map.putDouble("eulerAngleX", face.getHeadEulerAngleX()); // Head is rotated to the left rotY degrees
           map.putDouble("eulerAngleY", face.getHeadEulerAngleY()); // Head is rotated to the right rotY degrees
@@ -146,13 +152,14 @@ public class VisionCameraFaceDetectorPlugin extends FrameProcessorPlugin {
           map.putDouble("rightEyeOpenProbability", face.getRightEyeOpenProbability());
           map.putDouble("SmilingProbability", face.getSmilingProbability());
 
+
+
           WritableMap contours = processFaceContours(face);
           WritableMap bounds = processBoundingBox(face.getBoundingBox());
 
           map.putMap("bounds", bounds);
           map.putMap("contours", contours);
 
-          // classifications all
           array.pushMap(map);
         }
         return array;
@@ -160,6 +167,7 @@ public class VisionCameraFaceDetectorPlugin extends FrameProcessorPlugin {
         e.printStackTrace();
       }
     }
+
     return null;
   }
 
