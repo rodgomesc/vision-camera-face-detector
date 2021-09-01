@@ -39,5 +39,6 @@ export interface Face {
 
 export function scanFaces(frame: Frame): Face[] {
   'worklet';
+  // @ts-ignore
   return __scanFaces(frame);
 }
