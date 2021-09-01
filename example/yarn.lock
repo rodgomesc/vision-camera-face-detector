@@ -1521,9 +1521,9 @@ copy-descriptor@^0.1.0:
   integrity sha1-Z29us8OZl8LuGsOpJP1hJHSPV40=
 
 core-js-compat@^3.14.0:
-  version "3.16.4"
-  resolved "https://registry.yarnpkg.com/core-js-compat/-/core-js-compat-3.16.4.tgz#cf28abe0e45a43645b04b2c1a073efa03d0b3b26"
-  integrity sha512-IzCSomxRdahCYb6G3HiN6pl3JCiM0NMunRcNa1pIeC7g17Vd6Ue3AT9anQiENPIm/svThUVer1pIbLMDERIsFw==
+  version "3.17.0"
+  resolved "https://registry.yarnpkg.com/core-js-compat/-/core-js-compat-3.17.0.tgz#3047a5057911425b62940aa91aac7b11760014db"
+  integrity sha512-haEcBrfU3hu83JXWpcLHzeg8Ypf05LGK4GIjzLiYgFJYXuxrkdN2MrDBeHt/t5/ZFmIzLcdsT2x8Xw654wXsuw==
   dependencies:
     browserslist "^4.16.8"
     semver "7.0.0"

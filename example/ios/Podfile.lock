@@ -528,11 +528,11 @@ SPEC CHECKSUMS:
   React-runtimeexecutor: a9904c6d0218fb9f8b19d6dd88607225927668f9
   ReactCommon: 149906e01aa51142707a10665185db879898e966
   RNReanimated: daebbd404c0cd9df6daa248d63dd940086bea9ff
-  vision-camera-face-detector: 9b72d01584beb2651de3abb1e2d20e1fd625e641
+  vision-camera-face-detector: 5cf980f87e8f47c8cc2e7df5456b99e11ac0fedd
   VisionCamera: dc481620431e31c1d6bbbc438d8a1d9c56f3d304
   Yoga: 575c581c63e0d35c9a83f4b46d01d63abc1100ac
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 33b0c1f2fa52c6c84370f2fb8b047a070bf7b12b
+PODFILE CHECKSUM: b883aa940e92db5ad2f0bfdc76acf6a3e57a723d
 
 COCOAPODS: 1.10.1
