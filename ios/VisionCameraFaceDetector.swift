@@ -1,10 +1,28 @@
 import Vision
+import MLKit
+
 
 @objc(VisionCameraFaceDetector)
 public class VisionCameraFaceDetector: NSObject, FrameProcessorPluginBase {
-
+  let options = FaceDetectorOptions()
+   
   @objc
   public static func callback(_ frame: Frame!, withArgs _: [Any]!) -> Any! {
+    let image = VisionImage(frame: UIImage)
+    visionImage.orientation = image.imageOrientation
+    
+    let faceDetector = FaceDetector.faceDetector(options: options)
+    var faces: [Face]
+    
+    do {
+         faces = try faceDetector.process(visionImage)
+       } catch let error {
+            return nil
+       }
+
+    
+    
+
     // guard let imageBuffer = CMSampleBufferGetImageBuffer(frame.buffer) else {
     //   return nil
     // }
@@ -14,15 +32,6 @@ public class VisionCameraFaceDetector: NSObject, FrameProcessorPluginBase {
     
     // let orientation = frame.orientation
     // code goes here
-     return [
-            "example_str": "Test",
-            "example_bool": true,
-            "example_double": 5.3,
-            "example_array": [
-                "Hello",
-                true,
-                17.38,
-            ],
-        ]
+     return faces
   }
 }
