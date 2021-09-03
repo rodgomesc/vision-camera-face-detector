@@ -437,6 +437,7 @@ DEPENDENCIES:
   - FlipperKit/FlipperKitUserDefaultsPlugin (= 0.80.0)
   - FlipperKit/SKIOSNetworkPlugin (= 0.80.0)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
+  - GoogleMLKit/FaceDetection (= 2.3.0)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
   - RCTTypeSafety (from `../node_modules/react-native/Libraries/TypeSafety`)
@@ -617,6 +618,6 @@ SPEC CHECKSUMS:
   Yoga: 575c581c63e0d35c9a83f4b46d01d63abc1100ac
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 4a679d4a294b398c9605e4e2fa7ba717984a1dbf
+PODFILE CHECKSUM: 3e287090337b8fbcd76e82678361d4c6e202f6a4
 
 COCOAPODS: 1.10.1

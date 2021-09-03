@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0368A864A9ED8403DE35450F /* libPods-VisionCameraFaceDetector.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 413E9A3BD284B4C16ABD1394 /* libPods-VisionCameraFaceDetector.a */; };
 		F4FF95D7245B92E800C19C63 /* VisionCameraFaceDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4FF95D6245B92E800C19C63 /* VisionCameraFaceDetector.swift */; };
 /* End PBXBuildFile section */
 
@@ -38,7 +37,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0368A864A9ED8403DE35450F /* libPods-VisionCameraFaceDetector.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -79,7 +77,6 @@
 				176424824ABE630BBBFC0FD4 /* Pods-VisionCameraFaceDetector.debug.xcconfig */,
 				076422DE5113E1AB358DDEA4 /* Pods-VisionCameraFaceDetector.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
