@@ -1,20 +1,22 @@
 import Vision
 import MLKitFaceDetection
 import MLKitVision
+import CoreML
+
 
 
 @objc(VisionCameraFaceDetector)
 public class VisionCameraFaceDetector: NSObject, FrameProcessorPluginBase {
 
 
-  var FaceDetectorOption: FaceDetectorOptions = {
+  static var FaceDetectorOption: FaceDetectorOptions = {
     let option = FaceDetectorOptions()
     option.contourMode = .all
     option.performanceMode = .fast
     return option
   }()
 
-  private lazy var faceDetector = FaceDetector.faceDetector(options: FaceDetectorOption)
+  static var faceDetector = FaceDetector.faceDetector(options: FaceDetectorOption)
   
     
   private static func processFace(from faces: [Face]?) -> Any  {
@@ -46,19 +48,17 @@ public class VisionCameraFaceDetector: NSObject, FrameProcessorPluginBase {
   public static func callback(_ frame: Frame!, withArgs _: [Any]!) -> Any! {
     let image = VisionImage.init(buffer: frame.buffer)
     image.orientation = frame.orientation
-    var faces: [Face]
-
-     
+    var faces:  [Face]
+            
     do {
-       faces =  faceDetector.results(in: image)
-        
-        if (!faces.isEmpty){
-            var processedFaces = processFace(from: faces)
-            return processedFaces
-        }
-    } catch let error {
-        return []
-    }
+        faces =  try faceDetector.results(in: image)
+           if (!faces.isEmpty){
+               let processedFaces = processFace(from: faces)
+               return processedFaces
+           }
+       } catch _ {
+           return []
+       }
 
     
 
