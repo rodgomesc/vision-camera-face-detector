@@ -40,5 +40,6 @@ export interface Face {
 export function scanFaces(frame: Frame): Face[] {
   'worklet';
   // @ts-ignore
+  // eslint-disable-next-line no-undef
   return __scanFaces(frame);
 }
