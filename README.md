@@ -5,17 +5,59 @@ VisionCamera Frame Processor Plugin to detect faces using MLKit Vision Face Dete
 ## Installation
 
 ```sh
-npm install vision-camera-face-detector
+yarn add vision-camera-face-detector
 ```
 
 ## Usage
 
 ```js
-import VisionCameraFaceDetector from "vision-camera-face-detector";
+import * as React from 'react';
+import { runOnJS } from 'react-native-reanimated';
 
-// ...
+import { StyleSheet } from 'react-native';
+import {
+  useCameraDevices,
+  useFrameProcessor,
+} from 'react-native-vision-camera';
 
-const result = await VisionCameraFaceDetector.multiply(3, 7);
+import { Camera } from 'react-native-vision-camera';
+import { scanFaces, Face } from 'vision-camera-face-detector';
+
+export default function App() {
+  const [hasPermission, setHasPermission] = React.useState(false);
+  const [faces, setFaces] = React.useState<Face[]>();
+
+  const devices = useCameraDevices();
+  const device = devices.front;
+
+  React.useEffect(() => {
+    console.log(faces);
+  }, [faces]);
+
+  React.useEffect(() => {
+    (async () => {
+      const status = await Camera.requestCameraPermission();
+      setHasPermission(status === 'authorized');
+    })();
+  }, []);
+
+  const frameProcessor = useFrameProcessor((frame) => {
+    'worklet';
+    const scannedFaces = scanFaces(frame);
+    runOnJS(setFaces)(scannedFaces);
+  }, []);
+
+  return device != null && hasPermission ? (
+    <Camera
+      style={StyleSheet.absoluteFill}
+      device={device}
+      isActive={true}
+      frameProcessor={frameProcessor}
+      frameProcessorFps={5}
+    />
+  ) : null;
+}
+
 ```
 
 ## Contributing

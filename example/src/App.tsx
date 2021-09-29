@@ -13,9 +13,14 @@ import { scanFaces, Face } from 'vision-camera-face-detector';
 
 export default function App() {
   const [hasPermission, setHasPermission] = React.useState(false);
+  const [faces, setFaces] = React.useState<Face[]>();
 
   const devices = useCameraDevices();
   const device = devices.front;
+
+  React.useEffect(() => {
+    console.log(faces);
+  }, [faces]);
 
   React.useEffect(() => {
     (async () => {
@@ -27,8 +32,7 @@ export default function App() {
   const frameProcessor = useFrameProcessor((frame) => {
     'worklet';
     const scannedFaces = scanFaces(frame);
-    console.log(scannedFaces);
-    //runOnJS(setFaces)(scannedFaces);
+    runOnJS(setFaces)(scannedFaces);
   }, []);
 
   return device != null && hasPermission ? (
