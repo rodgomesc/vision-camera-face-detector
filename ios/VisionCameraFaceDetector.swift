@@ -45,9 +45,9 @@ public class VisionCameraFaceDetector: NSObject, FrameProcessorPluginBase {
             for face in faces {
                var map: [String: Any] = [:]
                
-                map["rotX"] = face.headEulerAngleX  // Head is rotated to the uptoward rotX degrees
-                map["rotY"] = face.headEulerAngleY // Head is rotated to the right rotY degrees
-                map["rotZ"] = face.headEulerAngleZ  // Head is tilted sideways rotZ degrees
+                map["eulerAngleX"] = face.headEulerAngleX  // Head is rotated to the uptoward rotX degrees
+                map["eulerAngleY"] = face.headEulerAngleY // Head is rotated to the right rotY degrees
+                map["eulerAngleZ"] = face.headEulerAngleZ  // Head is tilted sideways rotZ degrees
                 map["leftEyeOpenProbability"] = face.leftEyeOpenProbability
                 map["rightEyeOpenProbability"] = face.rightEyeOpenProbability
                 map["smilingProbability"] = face.smilingProbability
