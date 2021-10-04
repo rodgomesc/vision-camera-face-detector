@@ -150,7 +150,7 @@ public class VisionCameraFaceDetectorPlugin extends FrameProcessorPlugin {
           map.putDouble("eulerAngleZ", face.getHeadEulerAngleZ());  // Head is tilted sideways rotZ degrees
           map.putDouble("leftEyeOpenProbability", face.getLeftEyeOpenProbability());
           map.putDouble("rightEyeOpenProbability", face.getRightEyeOpenProbability());
-          map.putDouble("SmilingProbability", face.getSmilingProbability());
+          map.putDouble("smilingProbability", face.getSmilingProbability());
 
 
 

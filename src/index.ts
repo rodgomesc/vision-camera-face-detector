@@ -11,7 +11,7 @@ export interface Face {
   eulerAngleY: number;
   eulerAngleZ: number;
   rightEyeOpenProbability: number;
-  SmilingProbability: number;
+  smilingProbability: number;
   bounds: {
     y: number;
     x: number;
