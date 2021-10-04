@@ -7,9 +7,9 @@ import type { Frame } from 'react-native-vision-camera';
 type Point = { x: number; y: number };
 export interface Face {
   leftEyeOpenProbability: number;
-  eulerAngleX: number;
-  eulerAngleY: number;
-  eulerAngleZ: number;
+  rollAngle: number;
+  pitchAngle: number;
+  yawAngle: number;
   rightEyeOpenProbability: number;
   smilingProbability: number;
   bounds: {
