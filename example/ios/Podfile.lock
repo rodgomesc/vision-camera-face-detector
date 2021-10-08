@@ -394,7 +394,7 @@ PODS:
     - React-jsi (= 0.66.0)
     - React-logger (= 0.66.0)
     - React-perflogger (= 0.66.0)
-  - RNReanimated (2.3.0-alpha.2):
+  - RNReanimated (2.3.0-beta.2):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -647,7 +647,7 @@ SPEC CHECKSUMS:
   React-RCTVibration: 53b92d54b923283638cb0186da7a5c2d2b70a49b
   React-runtimeexecutor: 4bb657a97aa74568d9ed634c8bd478299bb8a3a6
   ReactCommon: eb059748e842a1a86025ebbd4ac9d99e74492f88
-  RNReanimated: 5e6c5418fedd03a616b846102a5540e9b7a4173f
+  RNReanimated: 0a220d11e97e5de1c552e943a9a3f89b06c2cbf2
   vision-camera-face-detector: 2a9e09c8dc13a75827543c5fef9ae09c97471f5b
   VisionCamera: 000e8cc400165e27a6b65e3888ff35b1eb2633db
   Yoga: c11abbf5809216c91fcd62f5571078b83d9b6720
