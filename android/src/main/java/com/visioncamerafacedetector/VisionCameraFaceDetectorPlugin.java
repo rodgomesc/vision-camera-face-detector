@@ -145,14 +145,13 @@ public class VisionCameraFaceDetectorPlugin extends FrameProcessorPlugin {
         for (Face face : faces) {
           WritableMap map =  new WritableNativeMap();
 
-          map.putDouble("rollAngle", face.getHeadEulerAngleX()); // Head is rotated to the left rotY degrees
-          map.putDouble("pitchAngle", face.getHeadEulerAngleY()); // Head is rotated to the right rotY degrees
-          map.putDouble("yawAngle", face.getHeadEulerAngleZ());  // Head is tilted sideways rotZ degrees
+          map.putDouble("rollAngle", face.getHeadEulerAngleZ()); // Head is rotated to the left rotZ degrees
+          map.putDouble("pitchAngle", face.getHeadEulerAngleX()); // Head is rotated to the right rotX degrees
+          map.putDouble("yawAngle", face.getHeadEulerAngleY());  // Head is tilted sideways rotY degrees
           map.putDouble("leftEyeOpenProbability", face.getLeftEyeOpenProbability());
           map.putDouble("rightEyeOpenProbability", face.getRightEyeOpenProbability());
           map.putDouble("smilingProbability", face.getSmilingProbability());
-
-
+          
 
           WritableMap contours = processFaceContours(face);
           WritableMap bounds = processBoundingBox(face.getBoundingBox());
