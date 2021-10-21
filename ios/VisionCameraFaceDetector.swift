@@ -49,7 +49,7 @@ public class VisionCameraFaceDetector: NSObject, FrameProcessorPluginBase {
                     map["rightEyeOpenProbability"] = face.rightEyeOpenProbability
                     map["smilingProbability"] = face.smilingProbability
                     map["bounds"] = processBoundingBox(from: faces)
-                    map["cotours"] = processContours(from: faces)
+                    map["contours"] = processContours(from: faces)
                     
                     faceAttributes.append(map)
                 }
