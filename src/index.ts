@@ -1,7 +1,7 @@
 import type { Frame } from 'react-native-vision-camera';
 
 /**
- * Scans QR codes.
+ * Scans Faces.
  */
 
 type Point = { x: number; y: number };
