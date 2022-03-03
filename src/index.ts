@@ -17,6 +17,10 @@ export interface Face {
     x: number;
     height: number;
     width: number;
+    boundingCenterX: number;
+    boundingCenterY: number;
+    boundingExactCenterX?: number;
+    boundingExactCenterY?: number;
   };
   contours: {
     FACE: Point[];
