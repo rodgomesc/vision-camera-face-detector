@@ -56,6 +56,6 @@ dependencies {
     implementation "com.facebook.react:react-native:+"  // From node_modules
     implementation 'androidx.annotation:annotation:1.1.0'
     api project(":react-native-vision-camera")
-    implementation "androidx.camera:camera-core:1.1.0-alpha06"
-    implementation 'com.google.mlkit:face-detection:16.1.2'
+    implementation "androidx.camera:camera-core:1.1.0-alpha08"
+    implementation 'com.google.mlkit:face-detection:16.1.5'
 }
