@@ -1,5 +1,6 @@
 package com.visioncamerafacedetector;
 
+import static com.visioncamerafacedetector.Constant.TF_OD_API_INPUT_SIZE;
 import static java.lang.Math.ceil;
 
 import android.annotation.SuppressLint;
@@ -10,7 +11,6 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.media.Image;
-import android.util.Base64;
 
 import androidx.camera.core.ImageProxy;
 
@@ -29,7 +29,6 @@ import com.google.mlkit.vision.face.FaceDetector;
 import com.google.mlkit.vision.face.FaceDetectorOptions;
 import com.mrousavy.camera.frameprocessor.FrameProcessorPlugin;
 
-import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 public class VisionCameraFaceDetectorPlugin extends FrameProcessorPlugin {
@@ -42,9 +41,7 @@ public class VisionCameraFaceDetectorPlugin extends FrameProcessorPlugin {
       .setMinFaceSize(0.15f)
       .build();
 
-  final int TF_OD_API_INPUT_SIZE = 112;
   FaceDetector faceDetector = FaceDetection.getClient(options);
-  Bitmap bmpFace = Bitmap.createBitmap(TF_OD_API_INPUT_SIZE, TF_OD_API_INPUT_SIZE, Bitmap.Config.ARGB_8888);
 
   private WritableMap processBoundingBox(Rect boundingBox) {
     WritableMap bounds = Arguments.createMap();
@@ -56,12 +53,10 @@ public class VisionCameraFaceDetectorPlugin extends FrameProcessorPlugin {
     Double x = boundingBox.right + offsetX;
     Double y = boundingBox.top + offsetY;
 
-
     bounds.putDouble("x", boundingBox.centerX() + (boundingBox.centerX() - x));
     bounds.putDouble("y", boundingBox.centerY() + (y - boundingBox.centerY()));
     bounds.putDouble("width", boundingBox.width());
     bounds.putDouble("height", boundingBox.height());
-
 
     bounds.putDouble("boundingCenterX", boundingBox.centerX());
     bounds.putDouble("boundingCenterY", boundingBox.centerY());
@@ -135,23 +130,24 @@ public class VisionCameraFaceDetectorPlugin extends FrameProcessorPlugin {
     Image mediaImage = frame.getImage();
 
     if (mediaImage != null) {
-      InputImage image = InputImage.fromMediaImage(mediaImage, frame.getImageInfo().getRotationDegrees());
-      Task<List<Face>> task = faceDetector.process(image);
-      WritableNativeArray array = new WritableNativeArray();
       try {
+        InputImage image = InputImage.fromMediaImage(mediaImage, frame.getImageInfo().getRotationDegrees());
+        Task<List<Face>> task = faceDetector.process(image);
+        WritableNativeArray array = new WritableNativeArray();
         List<Face> faces = Tasks.await(task);
         for (Face face : faces) {
           WritableMap map = new WritableNativeMap();
-          Bitmap bmpResult = ImageConvertUtils.getInstance().getUpRightBitmap(image);
+          Bitmap bmpFrameResult = ImageConvertUtils.getInstance().getUpRightBitmap(image);
+          Bitmap bmpFaceResult = Bitmap.createBitmap(TF_OD_API_INPUT_SIZE, TF_OD_API_INPUT_SIZE, Bitmap.Config.ARGB_8888);
           final RectF faceBB = new RectF(face.getBoundingBox());
-          final Canvas cvFace = new Canvas(bmpFace);
+          final Canvas cvFace = new Canvas(bmpFaceResult);
           float sx = ((float) TF_OD_API_INPUT_SIZE) / faceBB.width();
           float sy = ((float) TF_OD_API_INPUT_SIZE) / faceBB.height();
           Matrix matrix = new Matrix();
           matrix.postTranslate(-faceBB.left, -faceBB.top);
           matrix.postScale(sx, sy);
-          cvFace.drawBitmap(bmpResult, matrix, null);
-          String imageResult = getBase64Image(bmpFace);
+          cvFace.drawBitmap(bmpFrameResult, matrix, null);
+          String imageResult = new Convert().getBase64Image(bmpFaceResult);
 
           map.putDouble("rollAngle", face.getHeadEulerAngleZ()); // Head is rotated to the left rotZ degrees
           map.putDouble("pitchAngle", face.getHeadEulerAngleX()); // Head is rotated to the right rotX degrees
@@ -174,17 +170,8 @@ public class VisionCameraFaceDetectorPlugin extends FrameProcessorPlugin {
         e.printStackTrace();
       }
     }
-
     return null;
   }
-
-  String getBase64Image(Bitmap bitmap) {
-    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-    bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-    byte[] byteArray = byteArrayOutputStream.toByteArray();
-    return Base64.encodeToString(byteArray, Base64.DEFAULT);
-  }
-
 
   VisionCameraFaceDetectorPlugin() {
     super("scanFaces");
