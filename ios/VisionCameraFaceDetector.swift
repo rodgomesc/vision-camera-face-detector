@@ -2,7 +2,6 @@ import Vision
 import MLKitFaceDetection
 import MLKitVision
 import CoreML
-
 import UIKit
 import AVFoundation
 
