@@ -28,7 +28,7 @@ import java.util.List;
 
 @ReactModule(name = VisionCameraFaceDetectorModule.NAME)
 public class VisionCameraFaceDetectorModule extends ReactContextBaseJavaModule {
-  public static final String NAME = "VisionCameraFaceDetector";
+  public static final String NAME = "VisionCameraFaceDetectorModule";
 
   FaceDetectorOptions options =
     new FaceDetectorOptions.Builder()
