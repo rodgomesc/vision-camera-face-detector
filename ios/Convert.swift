@@ -9,6 +9,28 @@ import Foundation
 import UIKit
 import MLImage
 
+public func getImageFaceFromBuffer(from sampleBuffer: CMSampleBuffer?, rectImage: CGRect) -> UIImage? {
+    guard let sampleBuffer = sampleBuffer else {
+        print("Sample buffer is NULL.")
+        return nil
+    }
+    guard let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
+        print("Invalid sample buffer.")
+        return nil
+    }
+    let ciimage = CIImage(cvPixelBuffer: imageBuffer)
+    let context = CIContext(options: nil)
+    let cgImage = context.createCGImage(ciimage, from: ciimage.extent)!
+    
+    if (!rectImage.isNull) {
+        let imageRef: CGImage = cgImage.cropping(to: rectImage)!
+        let imageCrop: UIImage = UIImage(cgImage: imageRef, scale: 0.5, orientation: .right)
+        return imageCrop
+    } else {
+        return nil
+    }
+}
+
 public func getImageFaceFromUIImage(from image: UIImage, rectImage: CGRect) -> UIImage? {
     let imageRef: CGImage = (image.cgImage?.cropping(to: rectImage)!)!
     let imageCrop: UIImage = UIImage(cgImage: imageRef, scale: 0.5, orientation: image.imageOrientation)

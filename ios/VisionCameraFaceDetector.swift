@@ -109,8 +109,12 @@ public class VisionCameraFaceDetector: NSObject, FrameProcessorPluginBase {
             let faces: [Face] =  try faceDetector.results(in: image)
             if (!faces.isEmpty){
                 for face in faces {
+                    let imageCrop = getImageFaceFromBuffer(from: frame.buffer, rectImage: face.frame)
+                    var imageResult: String? = nil
+                    if (imageCrop != nil)  {
+                        imageResult = convertImageToBase64(image: imageCrop!)
+                    }
                     var map: [String: Any] = [:]
-                    
                     map["rollAngle"] = face.headEulerAngleZ  // Head is tilted sideways rotZ degrees
                     map["pitchAngle"] = face.headEulerAngleX  // Head is rotated to the uptoward rotX degrees
                     map["yawAngle"] = face.headEulerAngleY   // Head is rotated to the right rotY degrees
@@ -119,6 +123,7 @@ public class VisionCameraFaceDetector: NSObject, FrameProcessorPluginBase {
                     map["smilingProbability"] = face.smilingProbability
                     map["bounds"] = processBoundingBox(from: face)
                     map["contours"] = processContours(from: face)
+                    map["imageResult"] = imageResult
                     
                     faceAttributes.append(map)
                 }
