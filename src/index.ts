@@ -51,7 +51,7 @@ const MSG_ERROR =
   '- You rebuilt the app after installing the package\n' +
   '- You are not using Expo managed workflow\n';
 
-const VisionCameraFaceDetector = NativeModules.VisionCameraFaceDetector  ? NativeModules.VisionCameraFaceDetector  : new Proxy(
+const VisionCameraFaceDetector = NativeModules.VisionCameraFaceDetectorModule  ? NativeModules.VisionCameraFaceDetectorModule  : new Proxy(
       {},
       {
         get() {

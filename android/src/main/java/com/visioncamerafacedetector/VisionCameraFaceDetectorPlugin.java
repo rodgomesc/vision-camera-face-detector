@@ -35,8 +35,8 @@ public class VisionCameraFaceDetectorPlugin extends FrameProcessorPlugin {
 
   FaceDetectorOptions options =
     new FaceDetectorOptions.Builder()
-      .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE)
-      .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
+      .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_FAST)
+      .setContourMode(FaceDetectorOptions.CONTOUR_MODE_NONE)
       .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_ALL)
       .setMinFaceSize(0.15f)
       .build();
@@ -156,11 +156,11 @@ public class VisionCameraFaceDetectorPlugin extends FrameProcessorPlugin {
           map.putDouble("rightEyeOpenProbability", face.getRightEyeOpenProbability());
           map.putDouble("smilingProbability", face.getSmilingProbability());
 
-          WritableMap contours = processFaceContours(face);
+//          WritableMap contours = processFaceContours(face);
           WritableMap bounds = processBoundingBox(face.getBoundingBox());
 
           map.putMap("bounds", bounds);
-          map.putMap("contours", contours);
+//          map.putMap("contours", contours);
           map.putString("imageResult", imageResult);
 
           array.pushMap(map);
