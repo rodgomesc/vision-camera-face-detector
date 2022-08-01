@@ -423,7 +423,7 @@ PODS:
     - React-RCTVibration
     - ReactCommon/turbomodule/core
     - Yoga
-  - vision-camera-face-detector (0.1.6):
+  - vision-camera-face-detector (0.1.8):
     - GoogleMLKit/FaceDetection
     - React-Core
   - VisionCamera (2.9.0):
@@ -648,11 +648,11 @@ SPEC CHECKSUMS:
   React-runtimeexecutor: 4bb657a97aa74568d9ed634c8bd478299bb8a3a6
   ReactCommon: eb059748e842a1a86025ebbd4ac9d99e74492f88
   RNReanimated: 0a220d11e97e5de1c552e943a9a3f89b06c2cbf2
-  vision-camera-face-detector: 2a9e09c8dc13a75827543c5fef9ae09c97471f5b
+  vision-camera-face-detector: c1d0ace533f6bcf710a21428efef01e019be42f4
   VisionCamera: 000e8cc400165e27a6b65e3888ff35b1eb2633db
   Yoga: c11abbf5809216c91fcd62f5571078b83d9b6720
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
 PODFILE CHECKSUM: 4a298edcf6dd53cfe7f0d9207cee4c7fddfd6df5
 
-COCOAPODS: 1.11.2
+COCOAPODS: 1.11.3

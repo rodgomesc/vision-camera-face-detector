@@ -2,7 +2,6 @@ import Vision
 import MLKitFaceDetection
 import MLKitVision
 import CoreML
-
 import UIKit
 import AVFoundation
 
@@ -10,10 +9,10 @@ import AVFoundation
 public class VisionCameraFaceDetector: NSObject, FrameProcessorPluginBase {
     static var FaceDetectorOption: FaceDetectorOptions = {
         let option = FaceDetectorOptions()
-        option.contourMode = .all
+        option.contourMode = .none
         option.classificationMode = .all
-        option.landmarkMode = .all
-        option.performanceMode = .accurate // doesn't work in fast mode!, why?
+        option.landmarkMode = .none
+        option.performanceMode = .fast // doesn't work in fast mode!, why?
         return option
     }()
     
@@ -110,8 +109,12 @@ public class VisionCameraFaceDetector: NSObject, FrameProcessorPluginBase {
             let faces: [Face] =  try faceDetector.results(in: image)
             if (!faces.isEmpty){
                 for face in faces {
+                    let imageCrop = getImageFaceFromBuffer(from: frame.buffer, rectImage: face.frame)
+                    var imageResult: String? = nil
+                    if (imageCrop != nil)  {
+                        imageResult = convertImageToBase64(image: imageCrop!)
+                    }
                     var map: [String: Any] = [:]
-                    
                     map["rollAngle"] = face.headEulerAngleZ  // Head is tilted sideways rotZ degrees
                     map["pitchAngle"] = face.headEulerAngleX  // Head is rotated to the uptoward rotX degrees
                     map["yawAngle"] = face.headEulerAngleY   // Head is rotated to the right rotY degrees
@@ -119,7 +122,8 @@ public class VisionCameraFaceDetector: NSObject, FrameProcessorPluginBase {
                     map["rightEyeOpenProbability"] = face.rightEyeOpenProbability
                     map["smilingProbability"] = face.smilingProbability
                     map["bounds"] = processBoundingBox(from: face)
-                    map["contours"] = processContours(from: face)
+//                    map["contours"] = processContours(from: face)
+                    map["imageResult"] = imageResult
                     
                     faceAttributes.append(map)
                 }
