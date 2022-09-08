@@ -426,7 +426,7 @@ PODS:
   - vision-camera-face-detector (0.1.8):
     - GoogleMLKit/FaceDetection
     - React-Core
-  - VisionCamera (2.9.0):
+  - VisionCamera (2.9.4):
     - React
     - React-callinvoker
     - React-Core
@@ -649,7 +649,7 @@ SPEC CHECKSUMS:
   ReactCommon: eb059748e842a1a86025ebbd4ac9d99e74492f88
   RNReanimated: 0a220d11e97e5de1c552e943a9a3f89b06c2cbf2
   vision-camera-face-detector: c1d0ace533f6bcf710a21428efef01e019be42f4
-  VisionCamera: 000e8cc400165e27a6b65e3888ff35b1eb2633db
+  VisionCamera: dcbcdf02e8a6ea3c03bf741a962701fe81f0950e
   Yoga: c11abbf5809216c91fcd62f5571078b83d9b6720
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 

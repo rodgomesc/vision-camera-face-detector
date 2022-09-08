@@ -73,7 +73,7 @@
   "peerDependencies": {
     "react": "*",
     "react-native": "*",
-    "react-native-vision-camera": ">=2.0.0"
+    "react-native-vision-camera": ">=2.9.4"
   },
   "jest": {
     "preset": "react-native",
