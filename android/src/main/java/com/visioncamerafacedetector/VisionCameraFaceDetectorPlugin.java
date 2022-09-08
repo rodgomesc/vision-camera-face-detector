@@ -1,14 +1,11 @@
 package com.visioncamerafacedetector;
 
-
 import static java.lang.Math.ceil;
 
 import android.annotation.SuppressLint;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.media.Image;
-import android.util.Log;
-
 
 import androidx.camera.core.ImageProxy;
 
@@ -24,13 +21,13 @@ import com.google.mlkit.vision.face.FaceContour;
 import com.google.mlkit.vision.face.FaceDetection;
 import com.google.mlkit.vision.face.FaceDetector;
 
-
 import com.google.mlkit.vision.face.FaceDetectorOptions;
+import com.google.mlkit.vision.face.FaceLandmark;
 import com.mrousavy.camera.frameprocessor.FrameProcessorPlugin;
 
-
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Map;
 
 public class VisionCameraFaceDetectorPlugin extends FrameProcessorPlugin {
 
@@ -39,6 +36,7 @@ public class VisionCameraFaceDetectorPlugin extends FrameProcessorPlugin {
       .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE)
       .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
       .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_ALL)
+      .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_ALL)
       .setMinFaceSize(0.15f)
       .build();
 
@@ -129,6 +127,95 @@ public class VisionCameraFaceDetectorPlugin extends FrameProcessorPlugin {
     return faceContoursTypesMap;
   }
 
+  private WritableMap processFaceLandmarks(Face face) {
+    // All faceContours
+//    int[] faceLandmarkTypes =
+//      new int[]{
+//        FaceLandmark.LEFT_CHEEK,
+//        FaceLandmark.LEFT_EYE,
+//        FaceLandmark.RIGHT_CHEEK,
+//        FaceLandmark.RIGHT_EYE,
+//        FaceLandmark.LEFT_EAR,
+//        FaceLandmark.MOUTH_BOTTOM,
+//        FaceLandmark.MOUTH_LEFT,
+//        FaceLandmark.MOUTH_RIGHT,
+//        FaceLandmark.NOSE_BASE,
+//        FaceLandmark.RIGHT_EAR,
+//      };
+
+//    String[] faceLandmarksTypesStrings = {
+//      "LEFT_CHEEK",
+//      "LEFT_EYE",
+//      "RIGHT_CHEEK",
+//      "RIGHT_EYE",
+//      "LEFT_EAR",
+//      "MOUTH_BOTTOM",
+//      "MOUTH_LEFT",
+//      "MOUTH_RIGHT",
+//      "NOSE_BASE",
+//      "RIGHT_EAR"
+//    };
+
+    Map<String, Integer> faceLandmarkTypesMap = new HashMap<>();
+    faceLandmarkTypesMap.put("MOUTH_BOTTOM", FaceLandmark.MOUTH_BOTTOM);
+    faceLandmarkTypesMap.put("MOUTH_RIGHT", FaceLandmark.MOUTH_RIGHT);
+    faceLandmarkTypesMap.put("MOUTH_LEFT", FaceLandmark.MOUTH_LEFT);
+    faceLandmarkTypesMap.put("RIGHT_EYE", FaceLandmark.RIGHT_EYE);
+    faceLandmarkTypesMap.put("LEFT_EYE", FaceLandmark.LEFT_EYE);
+    faceLandmarkTypesMap.put("RIGHT_EAR", FaceLandmark.RIGHT_EAR);
+    faceLandmarkTypesMap.put("LEFT_EAR", FaceLandmark.LEFT_EAR);
+    faceLandmarkTypesMap.put("RIGHT_CHEEK", FaceLandmark.RIGHT_CHEEK);
+    faceLandmarkTypesMap.put("LEFT_CHEEK", FaceLandmark.LEFT_CHEEK);
+    faceLandmarkTypesMap.put("NOSE_BASE", FaceLandmark.NOSE_BASE);
+
+    WritableMap faceLandmarksMap = new WritableNativeMap();
+
+    for (Map.Entry<String, Integer> entry : faceLandmarkTypesMap.entrySet()) {
+      String faceLandmark = entry.getKey();
+      int faceLandmarkTypeID = entry.getValue();
+
+      FaceLandmark landmark = face.getLandmark(faceLandmarkTypeID);
+
+      float positionX = landmark != null ? landmark.getPosition().x : -1f;
+      float positionY = landmark != null ? landmark.getPosition().y : -1f;
+
+      WritableMap currentPointsMap = new WritableNativeMap();
+      currentPointsMap.putDouble("x", positionX);
+      currentPointsMap.putDouble("y", positionY);
+
+      faceLandmarksMap.putMap(faceLandmark, currentPointsMap);
+    }
+
+//    for (int i = 0; i < faceLandmarksTypesStrings.length; i++) {
+//      FaceLandmark landmark = face.getLandmark(faceLandmarkTypes[i]);
+//
+//
+//      float positionX = landmark.getPosition().x;
+//      float positionY = landmark.getPosition().y;
+//
+//      WritableMap currentPointsMap = new WritableNativeMap();
+//      currentPointsMap.putDouble("x", positionX);
+//      currentPointsMap.putDouble("y", positionY);
+//
+//      int index = Arrays.asList(faceLandmarkTypes).indexOf(landmark.getLandmarkType());
+//
+//      faceLandmarksTypesMap.putMap(faceLandmarksTypesStrings[index], currentPointsMap);
+
+
+//      for (int j = 0; j < points.size(); j++) {
+//        WritableMap currentPointsMap = new WritableNativeMap();
+//
+//        currentPointsMap.putDouble("x", points.get(j).x);
+//        currentPointsMap.putDouble("y", points.get(j).y);
+//
+//        pointsArray.pushMap(currentPointsMap);
+//      }
+//      faceLandmarksTypesMap.putArray(faceLandmarksTypesStrings[contour.getFaceContourType() - 1], pointsArray);
+//    }
+
+    return faceLandmarksMap;
+  }
+
   @SuppressLint("NewApi")
   @Override
   public Object callback(ImageProxy frame, Object[] params) {
@@ -147,16 +234,17 @@ public class VisionCameraFaceDetectorPlugin extends FrameProcessorPlugin {
           map.putDouble("rollAngle", face.getHeadEulerAngleZ()); // Head is rotated to the left rotZ degrees
           map.putDouble("pitchAngle", face.getHeadEulerAngleX()); // Head is rotated to the right rotX degrees
           map.putDouble("yawAngle", face.getHeadEulerAngleY());  // Head is tilted sideways rotY degrees
-          map.putDouble("leftEyeOpenProbability", face.getLeftEyeOpenProbability());
-          map.putDouble("rightEyeOpenProbability", face.getRightEyeOpenProbability());
-          map.putDouble("smilingProbability", face.getSmilingProbability());
-
+          map.putDouble("leftEyeOpenProbability", face.getLeftEyeOpenProbability() == null ? -1f : face.getLeftEyeOpenProbability());
+          map.putDouble("rightEyeOpenProbability", face.getRightEyeOpenProbability() == null ? -1f : face.getRightEyeOpenProbability());
+          map.putDouble("smilingProbability", face.getSmilingProbability() == null ? -1f : face.getSmilingProbability());
 
           WritableMap contours = processFaceContours(face);
           WritableMap bounds = processBoundingBox(face.getBoundingBox());
+          WritableMap landmarks = processFaceLandmarks(face);
 
           map.putMap("bounds", bounds);
           map.putMap("contours", contours);
+          map.putMap("landmarks", landmarks);
 
           array.pushMap(map);
         }

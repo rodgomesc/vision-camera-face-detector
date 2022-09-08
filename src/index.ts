@@ -35,6 +35,18 @@ export interface Face {
     RIGHT_EYE: Point[];
     LEFT_CHEEK: Point[];
   };
+  landmarks: {
+    MOUTH_BOTTOM: Point[];
+    MOUTH_RIGHT: Point[];
+    MOUTH_LEFT: Point[];
+    RIGHT_EYE: Point[];
+    LEFT_EYE: Point[];
+    RIGHT_EAR: Point[];
+    LEFT_EAR: Point[];
+    RIGHT_CHEEK: Point[];
+    LEFT_CHEEK: Point[];
+    NOSE_BASE: Point[];
+  }
 }
 
 export function scanFaces(frame: Frame): Face[] {
