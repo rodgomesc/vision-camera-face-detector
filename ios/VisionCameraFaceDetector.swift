@@ -80,6 +80,63 @@ public class VisionCameraFaceDetector: NSObject, FrameProcessorPluginBase {
       return faceContoursTypesMap
     }
     
+    private static func processFaceLandmarks(from face: Face) -> [String:CGPoint] {
+        
+        let faceLandmarkTypesMap = [
+            "MOUTH_BOTTOM" : FaceLandmarkType.mouthBottom,
+            "MOUTH_RIGHT" : FaceLandmarkType.mouthRight,
+            "MOUTH_LEFT" : FaceLandmarkType.mouthLeft,
+            "RIGHT_EYE" : FaceLandmarkType.rightEye,
+            "LEFT_EYE" : FaceLandmarkType.leftEye,
+            "RIGHT_EAR" : FaceLandmarkType.rightEar,
+            "LEFT_EAR" : FaceLandmarkType.leftEar,
+            "RIGHT_CHEEK" : FaceLandmarkType.rightCheek,
+            "LEFT_CHEEK" : FaceLandmarkType.leftCheek,
+            "NOSE_BASE" : FaceLandmarkType.noseBase,
+        ]
+        
+      
+//      let faceContoursTypesStrings = [
+//        "FACE",
+//        "LEFT_EYEBROW_TOP",
+//        "LEFT_EYEBROW_BOTTOM",
+//        "RIGHT_EYEBROW_TOP",
+//        "RIGHT_EYEBROW_BOTTOM",
+//        "LEFT_EYE",
+//        "RIGHT_EYE",
+//        "UPPER_LIP_TOP",
+//        "UPPER_LIP_BOTTOM",
+//        "LOWER_LIP_TOP",
+//        "LOWER_LIP_BOTTOM",
+//        "NOSE_BRIDGE",
+//        "NOSE_BOTTOM",
+//        "LEFT_CHEEK",
+//        "RIGHT_CHEEK",
+//      ];
+        
+        var faceLandmarkTypes: [String:CGPoint] = [:]
+        
+        for (key, value) in faceLandmarkTypesMap {
+            
+            let faceLandmarks = face.landmark(ofType: value);
+//            var pointsArray: [[String:CGFloat]] = []
+            
+//            let currentPointsMap: [String:CGFloat?] = [
+//                "x": faceLandmarks?.position.x,
+//                "y": faceLandmarks?.position.y,
+//            ]
+            
+            let currentPointsMap: CGPoint = CGPoint(
+                x: faceLandmarks?.position.x != nil ? faceLandmarks!.position.x : -1,
+                y: faceLandmarks?.position.y != nil ? faceLandmarks!.position.y : -1)
+            
+            faceLandmarkTypes[key] = currentPointsMap
+            
+        }
+      
+      return faceLandmarkTypes
+    }
+    
     private static func processBoundingBox(from face: Face) -> [String:Any] {
         let frameRect = face.frame
 
@@ -120,6 +177,7 @@ public class VisionCameraFaceDetector: NSObject, FrameProcessorPluginBase {
                     map["smilingProbability"] = face.smilingProbability
                     map["bounds"] = processBoundingBox(from: face)
                     map["contours"] = processContours(from: face)
+                    map["landmarks"] = processFaceLandmarks(from: face)
                     
                     faceAttributes.append(map)
                 }

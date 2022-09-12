@@ -128,33 +128,6 @@ public class VisionCameraFaceDetectorPlugin extends FrameProcessorPlugin {
   }
 
   private WritableMap processFaceLandmarks(Face face) {
-    // All faceContours
-//    int[] faceLandmarkTypes =
-//      new int[]{
-//        FaceLandmark.LEFT_CHEEK,
-//        FaceLandmark.LEFT_EYE,
-//        FaceLandmark.RIGHT_CHEEK,
-//        FaceLandmark.RIGHT_EYE,
-//        FaceLandmark.LEFT_EAR,
-//        FaceLandmark.MOUTH_BOTTOM,
-//        FaceLandmark.MOUTH_LEFT,
-//        FaceLandmark.MOUTH_RIGHT,
-//        FaceLandmark.NOSE_BASE,
-//        FaceLandmark.RIGHT_EAR,
-//      };
-
-//    String[] faceLandmarksTypesStrings = {
-//      "LEFT_CHEEK",
-//      "LEFT_EYE",
-//      "RIGHT_CHEEK",
-//      "RIGHT_EYE",
-//      "LEFT_EAR",
-//      "MOUTH_BOTTOM",
-//      "MOUTH_LEFT",
-//      "MOUTH_RIGHT",
-//      "NOSE_BASE",
-//      "RIGHT_EAR"
-//    };
 
     Map<String, Integer> faceLandmarkTypesMap = new HashMap<>();
     faceLandmarkTypesMap.put("MOUTH_BOTTOM", FaceLandmark.MOUTH_BOTTOM);
@@ -185,33 +158,6 @@ public class VisionCameraFaceDetectorPlugin extends FrameProcessorPlugin {
 
       faceLandmarksMap.putMap(faceLandmark, currentPointsMap);
     }
-
-//    for (int i = 0; i < faceLandmarksTypesStrings.length; i++) {
-//      FaceLandmark landmark = face.getLandmark(faceLandmarkTypes[i]);
-//
-//
-//      float positionX = landmark.getPosition().x;
-//      float positionY = landmark.getPosition().y;
-//
-//      WritableMap currentPointsMap = new WritableNativeMap();
-//      currentPointsMap.putDouble("x", positionX);
-//      currentPointsMap.putDouble("y", positionY);
-//
-//      int index = Arrays.asList(faceLandmarkTypes).indexOf(landmark.getLandmarkType());
-//
-//      faceLandmarksTypesMap.putMap(faceLandmarksTypesStrings[index], currentPointsMap);
-
-
-//      for (int j = 0; j < points.size(); j++) {
-//        WritableMap currentPointsMap = new WritableNativeMap();
-//
-//        currentPointsMap.putDouble("x", points.get(j).x);
-//        currentPointsMap.putDouble("y", points.get(j).y);
-//
-//        pointsArray.pushMap(currentPointsMap);
-//      }
-//      faceLandmarksTypesMap.putArray(faceLandmarksTypesStrings[contour.getFaceContourType() - 1], pointsArray);
-//    }
 
     return faceLandmarksMap;
   }
