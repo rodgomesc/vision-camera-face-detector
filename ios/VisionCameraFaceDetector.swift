@@ -80,7 +80,7 @@ public class VisionCameraFaceDetector: NSObject, FrameProcessorPluginBase {
       return faceContoursTypesMap
     }
     
-    private static func processFaceLandmarks(from face: Face) -> [String:CGPoint] {
+    private static func processFaceLandmarks(from face: Face) -> [String:[String: CGFloat]] {
         
         let faceLandmarkTypesMap = [
             "MOUTH_BOTTOM" : FaceLandmarkType.mouthBottom,
@@ -95,47 +95,22 @@ public class VisionCameraFaceDetector: NSObject, FrameProcessorPluginBase {
             "NOSE_BASE" : FaceLandmarkType.noseBase,
         ]
         
-      
-//      let faceContoursTypesStrings = [
-//        "FACE",
-//        "LEFT_EYEBROW_TOP",
-//        "LEFT_EYEBROW_BOTTOM",
-//        "RIGHT_EYEBROW_TOP",
-//        "RIGHT_EYEBROW_BOTTOM",
-//        "LEFT_EYE",
-//        "RIGHT_EYE",
-//        "UPPER_LIP_TOP",
-//        "UPPER_LIP_BOTTOM",
-//        "LOWER_LIP_TOP",
-//        "LOWER_LIP_BOTTOM",
-//        "NOSE_BRIDGE",
-//        "NOSE_BOTTOM",
-//        "LEFT_CHEEK",
-//        "RIGHT_CHEEK",
-//      ];
-        
-        var faceLandmarkTypes: [String:CGPoint] = [:]
+        var faceLandmarkTypes: [String:[String: CGFloat]] = [:]
         
         for (key, value) in faceLandmarkTypesMap {
             
             let faceLandmarks = face.landmark(ofType: value);
-//            var pointsArray: [[String:CGFloat]] = []
             
-//            let currentPointsMap: [String:CGFloat?] = [
-//                "x": faceLandmarks?.position.x,
-//                "y": faceLandmarks?.position.y,
-//            ]
-            
-            let currentPointsMap: CGPoint = CGPoint(
-                x: faceLandmarks?.position.x != nil ? faceLandmarks!.position.x : -1,
-                y: faceLandmarks?.position.y != nil ? faceLandmarks!.position.y : -1)
+            var currentPointsMap: [String: CGFloat] = [:]
+            currentPointsMap["x"] = faceLandmarks?.position.x != nil ? faceLandmarks!.position.x : -1
+            currentPointsMap["y"] = faceLandmarks?.position.y != nil ? faceLandmarks!.position.y : -1
             
             faceLandmarkTypes[key] = currentPointsMap
-            
         }
       
       return faceLandmarkTypes
     }
+    
     
     private static func processBoundingBox(from face: Face) -> [String:Any] {
         let frameRect = face.frame
