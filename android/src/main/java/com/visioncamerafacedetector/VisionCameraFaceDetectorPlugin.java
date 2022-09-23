@@ -6,10 +6,14 @@ import android.annotation.SuppressLint;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.media.Image;
+import android.util.DisplayMetrics;
+import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.camera.core.ImageProxy;
 
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
@@ -23,6 +27,7 @@ import com.google.mlkit.vision.face.FaceDetector;
 
 import com.google.mlkit.vision.face.FaceDetectorOptions;
 import com.google.mlkit.vision.face.FaceLandmark;
+import com.mrousavy.camera.CameraView;
 import com.mrousavy.camera.frameprocessor.FrameProcessorPlugin;
 
 import java.util.HashMap;
@@ -41,6 +46,7 @@ public class VisionCameraFaceDetectorPlugin extends FrameProcessorPlugin {
       .build();
 
   FaceDetector faceDetector = FaceDetection.getClient(options);
+  ReactContext context = null;
 
   private WritableMap processBoundingBox(Rect boundingBox) {
     WritableMap bounds = Arguments.createMap();
@@ -168,6 +174,13 @@ public class VisionCameraFaceDetectorPlugin extends FrameProcessorPlugin {
     @SuppressLint("UnsafeOptInUsageError")
     Image mediaImage = frame.getImage();
 
+    DisplayMetrics dm = new DisplayMetrics();
+    context.getDisplay().getMetrics(dm);
+    double x = Math.pow(dm.widthPixels / dm.xdpi, 2);
+    double y = Math.pow(dm.heightPixels / dm.ydpi, 2);
+    double screenInches = Math.sqrt(x + y);
+    double screenDensity = Math.sqrt(Math.pow(dm.widthPixels, 2) + Math.pow(dm.heightPixels, 2)) / screenInches;
+
     if (mediaImage != null) {
       InputImage image = InputImage.fromMediaImage(mediaImage, frame.getImageInfo().getRotationDegrees());
       Task<List<Face>> task = faceDetector.process(image);
@@ -183,6 +196,8 @@ public class VisionCameraFaceDetectorPlugin extends FrameProcessorPlugin {
           map.putDouble("leftEyeOpenProbability", face.getLeftEyeOpenProbability() == null ? -1f : face.getLeftEyeOpenProbability());
           map.putDouble("rightEyeOpenProbability", face.getRightEyeOpenProbability() == null ? -1f : face.getRightEyeOpenProbability());
           map.putDouble("smilingProbability", face.getSmilingProbability() == null ? -1f : face.getSmilingProbability());
+          map.putDouble("ScreenInches", screenInches);
+          map.putDouble("ScreenDensity", screenDensity);
 
           WritableMap contours = processFaceContours(face);
           WritableMap bounds = processBoundingBox(face.getBoundingBox());
@@ -203,8 +218,8 @@ public class VisionCameraFaceDetectorPlugin extends FrameProcessorPlugin {
     return null;
   }
 
-
-  VisionCameraFaceDetectorPlugin() {
+  VisionCameraFaceDetectorPlugin(ReactContext context) {
     super("scanFaces");
+    this.context = context;
   }
 }
