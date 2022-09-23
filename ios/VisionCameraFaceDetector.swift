@@ -80,6 +80,38 @@ public class VisionCameraFaceDetector: NSObject, FrameProcessorPluginBase {
       return faceContoursTypesMap
     }
     
+    private static func processFaceLandmarks(from face: Face) -> [String:[String: CGFloat]] {
+        
+        let faceLandmarkTypesMap = [
+            "MOUTH_BOTTOM" : FaceLandmarkType.mouthBottom,
+            "MOUTH_RIGHT" : FaceLandmarkType.mouthRight,
+            "MOUTH_LEFT" : FaceLandmarkType.mouthLeft,
+            "RIGHT_EYE" : FaceLandmarkType.rightEye,
+            "LEFT_EYE" : FaceLandmarkType.leftEye,
+            "RIGHT_EAR" : FaceLandmarkType.rightEar,
+            "LEFT_EAR" : FaceLandmarkType.leftEar,
+            "RIGHT_CHEEK" : FaceLandmarkType.rightCheek,
+            "LEFT_CHEEK" : FaceLandmarkType.leftCheek,
+            "NOSE_BASE" : FaceLandmarkType.noseBase,
+        ]
+        
+        var faceLandmarkTypes: [String:[String: CGFloat]] = [:]
+        
+        for (key, value) in faceLandmarkTypesMap {
+            
+            let faceLandmarks = face.landmark(ofType: value);
+            
+            var currentPointsMap: [String: CGFloat] = [:]
+            currentPointsMap["x"] = faceLandmarks?.position.x != nil ? faceLandmarks!.position.x : -1
+            currentPointsMap["y"] = faceLandmarks?.position.y != nil ? faceLandmarks!.position.y : -1
+            
+            faceLandmarkTypes[key] = currentPointsMap
+        }
+      
+      return faceLandmarkTypes
+    }
+    
+    
     private static func processBoundingBox(from face: Face) -> [String:Any] {
         let frameRect = face.frame
 
@@ -120,6 +152,7 @@ public class VisionCameraFaceDetector: NSObject, FrameProcessorPluginBase {
                     map["smilingProbability"] = face.smilingProbability
                     map["bounds"] = processBoundingBox(from: face)
                     map["contours"] = processContours(from: face)
+                    map["landmarks"] = processFaceLandmarks(from: face)
                     
                     faceAttributes.append(map)
                 }

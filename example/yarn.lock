@@ -3369,10 +3369,10 @@ react-native-screens@^3.4.0:
   dependencies:
     warn-once "^0.1.0"
 
-react-native-vision-camera@2.9.0:
-  version "2.9.0"
-  resolved "https://registry.yarnpkg.com/react-native-vision-camera/-/react-native-vision-camera-2.9.0.tgz#904b9695359c1b913b6bda70188dbb76d43070d5"
-  integrity sha512-1bk+ayF+MP0hcGNVodAftmqp9tLRUq1gW37G/A5hzh/5yPtUkIibhvnMD30/idLlHBjTVnFw4egbXg40BKpQCg==
+react-native-vision-camera@2.9.4:
+  version "2.9.4"
+  resolved "https://registry.yarnpkg.com/react-native-vision-camera/-/react-native-vision-camera-2.9.4.tgz#e80f9da924dbd308478a15a421957dff146b9259"
+  integrity sha512-glaemA2MHW3Yq7kM7Ty+4jPnyncDp8Opm7nH93GGoZwYOXCbTj/GzLl8yOi9NrhFE+yrq2SD4ijyxNMO2fJ7kQ==
 
 react-native@0.66.0:
   version "0.66.0"
