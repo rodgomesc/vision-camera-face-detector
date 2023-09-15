@@ -58,17 +58,21 @@ public class VisionCameraFaceDetectorModule extends ReactContextBaseJavaModule {
       InputImage image = InputImage.fromBitmap(bmpStorageResult, 0);
       Task<List<Face>> task = faceDetector.process(image);
       List<Face> faces = Tasks.await(task);
-      for (Face face : faces) {
-        Bitmap bmpFaceStorage = Bitmap.createBitmap(TF_OD_API_INPUT_SIZE, TF_OD_API_INPUT_SIZE, Bitmap.Config.ARGB_8888);
-        final RectF faceBB = new RectF(face.getBoundingBox());
-        final Canvas cvFace = new Canvas(bmpFaceStorage);
-        float sx = ((float) TF_OD_API_INPUT_SIZE) / faceBB.width();
-        float sy = ((float) TF_OD_API_INPUT_SIZE) / faceBB.height();
-        Matrix matrix = new Matrix();
-        matrix.postTranslate(-faceBB.left, -faceBB.top);
-        matrix.postScale(sx, sy);
-        cvFace.drawBitmap(bmpStorageResult, matrix, null);
-        promise.resolve(new Convert().getBase64Image(bmpFaceStorage));
+      if (faces.size() > 0) {
+        for (Face face : faces) {
+          Bitmap bmpFaceStorage = Bitmap.createBitmap(TF_OD_API_INPUT_SIZE, TF_OD_API_INPUT_SIZE, Bitmap.Config.ARGB_8888);
+          final RectF faceBB = new RectF(face.getBoundingBox());
+          final Canvas cvFace = new Canvas(bmpFaceStorage);
+          float sx = ((float) TF_OD_API_INPUT_SIZE) / faceBB.width();
+          float sy = ((float) TF_OD_API_INPUT_SIZE) / faceBB.height();
+          Matrix matrix = new Matrix();
+          matrix.postTranslate(-faceBB.left, -faceBB.top);
+          matrix.postScale(sx, sy);
+          cvFace.drawBitmap(bmpStorageResult, matrix, null);
+          promise.resolve(new Convert().getBase64Image(bmpFaceStorage));
+        }
+      } else {
+        promise.resolve("");
       }
     } catch (Exception e) {
       e.printStackTrace();

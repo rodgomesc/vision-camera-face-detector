@@ -38,6 +38,8 @@ class VisionCameraFaceDetectorModule: NSObject {
                         resolve(convertImageToBase64(image:imageCrop!))
                         return
                     }
+                } else {
+                    resolve("")
                 }
             } catch {
                 reject("Error", error.localizedDescription, error)
