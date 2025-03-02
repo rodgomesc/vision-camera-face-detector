@@ -2,11 +2,11 @@ buildscript {
     if (project == rootProject) {
         repositories {
             google()
-            jcenter()
+            mavenCentral()
         }
 
         dependencies {
-            classpath 'com.android.tools.build:gradle:3.5.3'
+            classpath 'com.android.tools.build:gradle:7.0.4'
         }
     }
 }
@@ -48,7 +48,7 @@ repositories {
         url("$rootDir/../node_modules/react-native/android")
     }
     google()
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {
@@ -56,6 +56,7 @@ dependencies {
     implementation "com.facebook.react:react-native:+"  // From node_modules
     implementation 'androidx.annotation:annotation:1.1.0'
     api project(":react-native-vision-camera")
-    implementation "androidx.camera:camera-core:1.1.0-alpha06"
-    implementation 'com.google.mlkit:face-detection:16.1.2'
+    implementation "androidx.camera:camera-core:1.1.0-alpha08"
+    implementation 'com.google.mlkit:face-detection:16.1.5'
+    implementation 'com.google.code.gson:gson:2.12.1'
 }

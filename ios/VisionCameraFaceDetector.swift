@@ -7,7 +7,12 @@ import UIKit
 import AVFoundation
 
 @objc(VisionCameraFaceDetector)
-public class VisionCameraFaceDetector: NSObject, FrameProcessorPluginBase {
+public class VisionCameraFaceDetector: FrameProcessorPlugin {
+    @objc
+    public override init(proxy: VisionCameraProxyHolder, options: [AnyHashable : Any]! = [:]) {
+      super.init(proxy: proxy, options: options)
+    }
+
     static var FaceDetectorOption: FaceDetectorOptions = {
         let option = FaceDetectorOptions()
         option.contourMode = .all
@@ -100,14 +105,14 @@ public class VisionCameraFaceDetector: NSObject, FrameProcessorPluginBase {
     }
     
     @objc
-    public static func callback(_ frame: Frame!, withArgs _: [Any]!) -> Any! {
+    public override func callback(_ frame: Frame, withArguments arguments: [AnyHashable : Any]?) -> Any! {
         let image = VisionImage(buffer: frame.buffer)
         image.orientation = .up
         
         var faceAttributes: [Any] = []
         
         do {
-            let faces: [Face] =  try faceDetector.results(in: image)
+            let faces: [Face] =  try VisionCameraFaceDetector.faceDetector.results(in: image)
             if (!faces.isEmpty){
                 for face in faces {
                     var map: [String: Any] = [:]
@@ -118,8 +123,8 @@ public class VisionCameraFaceDetector: NSObject, FrameProcessorPluginBase {
                     map["leftEyeOpenProbability"] = face.leftEyeOpenProbability
                     map["rightEyeOpenProbability"] = face.rightEyeOpenProbability
                     map["smilingProbability"] = face.smilingProbability
-                    map["bounds"] = processBoundingBox(from: face)
-                    map["contours"] = processContours(from: face)
+                    map["bounds"] = VisionCameraFaceDetector.processBoundingBox(from: face)
+                    map["contours"] = VisionCameraFaceDetector.processContours(from: face)
                     
                     faceAttributes.append(map)
                 }

@@ -1,4 +1,5 @@
 import type { Frame } from 'react-native-vision-camera';
+import { VisionCameraProxy } from 'react-native-vision-camera';
 
 /**
  * Scans Faces.
@@ -37,9 +38,17 @@ export interface Face {
   };
 }
 
+
+const plugin = VisionCameraProxy.initFrameProcessorPlugin('scanFaces',{})
+
 export function scanFaces(frame: Frame): Face[] {
   'worklet';
   // @ts-ignore
   // eslint-disable-next-line no-undef
-  return __scanFaces(frame);
+  const rawFace: string = plugin.call(frame);
+  try {
+    return JSON.parse(rawFace || '[]');
+  } catch(ex) {
+    return [];
+  }
 }

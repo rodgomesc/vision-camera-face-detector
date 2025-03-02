@@ -2,6 +2,12 @@ package com.visioncamerafacedetector;
 
 
 import static java.lang.Math.ceil;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+
+import com.google.gson.Gson;
 
 import android.annotation.SuppressLint;
 import android.graphics.PointF;
@@ -12,10 +18,14 @@ import android.util.Log;
 
 import androidx.camera.core.ImageProxy;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.mlkit.vision.common.InputImage;
@@ -26,11 +36,10 @@ import com.google.mlkit.vision.face.FaceDetector;
 
 
 import com.google.mlkit.vision.face.FaceDetectorOptions;
-import com.mrousavy.camera.frameprocessor.FrameProcessorPlugin;
-
-
-import java.util.List;
-
+import com.mrousavy.camera.frameprocessors.FrameProcessorPlugin;
+import com.mrousavy.camera.frameprocessors.Frame;
+import com.mrousavy.camera.frameprocessors.VisionCameraProxy;
+import com.mrousavy.camera.core.FrameInvalidError;
 
 public class VisionCameraFaceDetectorPlugin extends FrameProcessorPlugin {
 
@@ -44,8 +53,8 @@ public class VisionCameraFaceDetectorPlugin extends FrameProcessorPlugin {
 
   FaceDetector faceDetector = FaceDetection.getClient(options);
 
-  private WritableMap processBoundingBox(Rect boundingBox) {
-    WritableMap bounds = Arguments.createMap();
+  private  HashMap<String, Object> processBoundingBox(Rect boundingBox) {
+     HashMap<String, Object> bounds =  new HashMap<String, Object>();
 
     // Calculate offset (we need to center the overlay on the target)
     Double offsetX =  (boundingBox.exactCenterX() - ceil(boundingBox.width())) / 2.0f;
@@ -54,23 +63,24 @@ public class VisionCameraFaceDetectorPlugin extends FrameProcessorPlugin {
     Double x = boundingBox.right + offsetX;
     Double y = boundingBox.top + offsetY;
 
+    // bounds.put("x", boundingBox.centerX() + (boundingBox.centerX() - x));
+    // bounds.put("y", boundingBox.centerY() + (y - boundingBox.centerY()));
+
+    bounds.put("x", boundingBox.left);
+    bounds.put("y", boundingBox.top);
+    bounds.put("width", boundingBox.width());
+    bounds.put("height", boundingBox.height());
 
 
-    bounds.putDouble("x", boundingBox.centerX() + (boundingBox.centerX() - x));
-    bounds.putDouble("y", boundingBox.centerY() + (y - boundingBox.centerY()));
-    bounds.putDouble("width", boundingBox.width());
-    bounds.putDouble("height", boundingBox.height());
-
-
-    bounds.putDouble("boundingCenterX", boundingBox.centerX());
-    bounds.putDouble("boundingCenterY", boundingBox.centerY());
-    bounds.putDouble("boundingExactCenterX", boundingBox.exactCenterX());
-    bounds.putDouble("boundingExactCenterY", boundingBox.exactCenterY());
+    bounds.put("boundingCenterX", boundingBox.centerX());
+    bounds.put("boundingCenterY", boundingBox.centerY());
+    bounds.put("boundingExactCenterX", boundingBox.exactCenterX());
+    bounds.put("boundingExactCenterY", boundingBox.exactCenterY());
 
     return bounds;
   }
 
-  private WritableMap  processFaceContours(Face face) {
+  private  HashMap<String, Object> processFaceContours(Face face) {
     // All faceContours
     int[] faceContoursTypes =
       new int[] {
@@ -109,22 +119,22 @@ public class VisionCameraFaceDetectorPlugin extends FrameProcessorPlugin {
         "RIGHT_CHEEK"
       };
 
-    WritableMap faceContoursTypesMap = new WritableNativeMap();
+    HashMap<String, Object> faceContoursTypesMap = new HashMap<String, Object>();
 
       for (int i = 0; i < faceContoursTypesStrings.length; i++) {
         FaceContour contour = face.getContour(faceContoursTypes[i]);
         List<PointF> points = contour.getPoints();
-        WritableNativeArray pointsArray = new WritableNativeArray();
+        List<HashMap<String, Object>> pointsArray = new ArrayList<HashMap<String, Object>>();
 
           for (int j = 0; j < points.size(); j++) {
-            WritableMap currentPointsMap = new WritableNativeMap();
+             HashMap<String, Object> currentPointsMap = new  HashMap<String, Object>();
 
-            currentPointsMap.putDouble("x", points.get(j).x);
-            currentPointsMap.putDouble("y", points.get(j).y);
+            currentPointsMap.put("x", points.get(j).x);
+            currentPointsMap.put("y", points.get(j).y);
 
-            pointsArray.pushMap(currentPointsMap);
+            pointsArray.add(currentPointsMap);
           }
-          faceContoursTypesMap.putArray(faceContoursTypesStrings[contour.getFaceContourType() - 1], pointsArray);
+          faceContoursTypesMap.put(faceContoursTypesStrings[contour.getFaceContourType() - 1], pointsArray);
       }
 
     return faceContoursTypesMap;
@@ -132,46 +142,53 @@ public class VisionCameraFaceDetectorPlugin extends FrameProcessorPlugin {
 
   @SuppressLint("NewApi")
   @Override
-  public Object callback(ImageProxy frame, Object[] params) {
-    @SuppressLint("UnsafeOptInUsageError")
-    Image mediaImage = frame.getImage();
+  public Object callback( Frame frame, Map<String,Object> params) {
+    try {
+      Image mediaImage = frame.getImage();
+      ImageProxy imageProxy = frame.getImageProxy();
 
-    if (mediaImage != null) {
-      InputImage image = InputImage.fromMediaImage(mediaImage, frame.getImageInfo().getRotationDegrees());
-      Task<List<Face>> task = faceDetector.process(image);
-      WritableNativeArray array = new WritableNativeArray();
-      try {
-        List<Face> faces = Tasks.await(task);
-        for (Face face : faces) {
-          WritableMap map =  new WritableNativeMap();
+      if (mediaImage != null) {
+        InputImage image = InputImage.fromMediaImage(mediaImage, imageProxy.getImageInfo().getRotationDegrees());
+        Task<List<Face>> task = faceDetector.process(image);
+        List<HashMap<String, Object>> array = new ArrayList<HashMap<String, Object>>();
+        try {
+          List<Face> faces = Tasks.await(task);
+          for (Face face : faces) {
+            HashMap<String, Object> map = new HashMap<String, Object>();
 
-          map.putDouble("rollAngle", face.getHeadEulerAngleZ()); // Head is rotated to the left rotZ degrees
-          map.putDouble("pitchAngle", face.getHeadEulerAngleX()); // Head is rotated to the right rotX degrees
-          map.putDouble("yawAngle", face.getHeadEulerAngleY());  // Head is tilted sideways rotY degrees
-          map.putDouble("leftEyeOpenProbability", face.getLeftEyeOpenProbability());
-          map.putDouble("rightEyeOpenProbability", face.getRightEyeOpenProbability());
-          map.putDouble("smilingProbability", face.getSmilingProbability());
-          
+            map.put("rollAngle", face.getHeadEulerAngleZ()); // Head is rotated to the left rotZ degrees
+            map.put("pitchAngle", face.getHeadEulerAngleX()); // Head is rotated to the right rotX degrees
+            map.put("yawAngle", face.getHeadEulerAngleY());  // Head is tilted sideways rotY degrees
+            map.put("leftEyeOpenProbability", face.getLeftEyeOpenProbability());
+            map.put("rightEyeOpenProbability", face.getRightEyeOpenProbability());
+            map.put("smilingProbability", face.getSmilingProbability());
+            
 
-          WritableMap contours = processFaceContours(face);
-          WritableMap bounds = processBoundingBox(face.getBoundingBox());
+            HashMap<String, Object> contours = processFaceContours(face);
+            HashMap<String, Object> bounds = processBoundingBox(face.getBoundingBox());
 
-          map.putMap("bounds", bounds);
-          map.putMap("contours", contours);
+            map.put("bounds", bounds);
+            map.put("contours", contours);
 
-          array.pushMap(map);
+            array.add(map);
+          }
+
+          Gson gson = new Gson();
+
+          return gson.toJson(array);
+        } catch (Exception e) {
+          e.printStackTrace();
         }
-        return array;
-      } catch (Exception e) {
-        e.printStackTrace();
       }
+
+      return null;
+    } catch (FrameInvalidError e) {
+      return null;
     }
-
-    return null;
   }
 
+  VisionCameraFaceDetectorPlugin(@NonNull VisionCameraProxy proxy, @Nullable Map<String, Object> options) {super();}
 
-  VisionCameraFaceDetectorPlugin() {
-    super("scanFaces");
-  }
+  
+
 }
