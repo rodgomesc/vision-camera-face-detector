@@ -5,7 +5,11 @@ VisionCamera Frame Processor Plugin to detect faces and facial landmarks
 ## Installation
 
 ```sh
-npm install vision-camera-face-detector
+git clone --recurse-submodules -b v2 https://github.com/rodgomesc/vision-camera-face-detector.git
+
+cd vision-camera-face-detector
+
+yarn install
 ```
 
 ## Usage

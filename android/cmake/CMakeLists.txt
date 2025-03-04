@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.4.1)
 project(VisionCameraFaceDetector)
 set (PACKAGE_NAME "faceDetector")
 
+set (CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set (CMAKE_VERBOSE_MAKEFILE ON)
 set (CMAKE_CXX_STANDARD 20)
 

@@ -4,35 +4,33 @@
 
 #pragma once
 
-
-#include <android/native_window.h>
 #include <EGL/egl.h>
-
-
+#include <android/native_window.h>
 
 class EGLContextHandler {
-public:
-    EGLContextHandler();
+ public:
+  EGLContextHandler();
 
-    ~EGLContextHandler();
+  ~EGLContextHandler();
 
-    bool initialize(ANativeWindow *nativeWindow);
+  bool initialize(ANativeWindow *nativeWindow);
 
-    void terminate();
+  void terminate();
 
-    void swapBuffers();
+  void swapBuffers();
 
-    int getWidth() const;
+  int getWidth() const;
 
-    int getHeight() const;
-    
-    int _width;
-    int _height;
+  int getHeight() const;
 
-private:
-    EGLDisplay _eglDisplay;
-    EGLConfig _eglConfig;
-    EGLSurface _eglSurface;
-    EGLContext _eglContext;
+  bool isValid() const { return _eglDisplay != EGL_NO_DISPLAY; }
 
+  int _width;
+  int _height;
+
+ private:
+  EGLDisplay _eglDisplay;
+  EGLConfig _eglConfig;
+  EGLSurface _eglSurface;
+  EGLContext _eglContext;
 };
