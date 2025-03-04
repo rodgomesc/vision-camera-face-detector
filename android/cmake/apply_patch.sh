@@ -18,3 +18,9 @@ else
         echo "Pattern not found, but continuing"
     fi
 fi
+
+# Copy our custom react_native_rcore.h to the raylib source directory
+echo "Copying react_native_rcore.h to raylib source directory"
+cp "${CMAKE_CURRENT_SOURCE_DIR}/../../cpp/react_native_rcore.h" "${CMAKE_CURRENT_SOURCE_DIR}/../../externals/raylib/src/"
+
+echo "Patch applied successfully"

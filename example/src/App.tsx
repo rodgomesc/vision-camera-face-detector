@@ -9,10 +9,11 @@ export default function App() {
       <Text>AEEEEEEEEEEE</Text>
       <FaceDetectorView
         style={{
+          width: '100%',
+          height: '100%',
           borderWidth: 4,
           borderStyle: 'solid',
-          width: 200,
-          height: 200,
+          borderColor: 'yellow',
         }}
       />
     </View>

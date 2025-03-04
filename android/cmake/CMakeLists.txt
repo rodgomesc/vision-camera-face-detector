@@ -6,6 +6,7 @@ set (CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set (CMAKE_VERBOSE_MAKEFILE ON)
 set (CMAKE_CXX_STANDARD 20)
 
+
 include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}/../../cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/../../externals/raylib/src/
@@ -32,11 +33,10 @@ add_library(${PACKAGE_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/../../externals/raylib/src/utils.c
 
         # our custom rcore implementation
-        ../../cpp/JniOnLoad.cpp
+        ../../cpp/platforms/rcore_android.c
+        ../../cpp/RaylibSurface.cpp
         ../../cpp/FaceDetectorView.cpp
-        ../../cpp/react_native_rcore.cpp
-        ../../cpp/EGLContextHandler.cpp
-        ../../cpp/Global.cpp
+        ../../cpp/JniOnLoad.cpp
 
 )
 
