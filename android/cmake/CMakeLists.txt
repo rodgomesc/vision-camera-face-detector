@@ -9,22 +9,15 @@ set (CMAKE_CXX_STANDARD 20)
 
 include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}/../../cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../cpp/platforms
         ${CMAKE_CURRENT_SOURCE_DIR}/../../externals/raylib/src/
 )
 
 find_package(ReactAndroid REQUIRED CONFIG)
 find_package(fbjni REQUIRED CONFIG)
 
-add_custom_target(apply_raylib_patch ALL
-    COMMAND ${CMAKE_COMMAND} -E env bash ${CMAKE_CURRENT_SOURCE_DIR}/apply_patch.sh
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../externals/raylib/src/rcore.c
-    COMMENT "pathing raylib import for android in rcore.c"
-)
-
-
 add_library(${PACKAGE_NAME}
         SHARED
-
         ${CMAKE_CURRENT_SOURCE_DIR}/../../externals/raylib/src/rcore.c
         ${CMAKE_CURRENT_SOURCE_DIR}/../../externals/raylib/src/rmodels.c
         ${CMAKE_CURRENT_SOURCE_DIR}/../../externals/raylib/src/rshapes.c
@@ -33,10 +26,9 @@ add_library(${PACKAGE_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/../../externals/raylib/src/utils.c
 
         # our custom rcore implementation
-        ../../cpp/platforms/rcore_android.c
-        ../../cpp/RaylibSurface.cpp
-        ../../cpp/FaceDetectorView.cpp
-        ../../cpp/JniOnLoad.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../cpp/platforms/rcore_android.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../cpp/FaceDetectorView.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../cpp/JniOnLoad.cpp
 
 )
 
@@ -59,11 +51,7 @@ target_link_libraries(
         fbjni::fbjni
 )
 
-add_dependencies(${PACKAGE_NAME} apply_raylib_patch)
-
 # Define compiler macros for raylib
 target_compile_definitions(${PACKAGE_NAME} PRIVATE
         GRAPHICS_API_OPENGL_ES2
-        PLATFORM_ANDROID
-        __ANDROID__
 )
