@@ -67,13 +67,13 @@ FaceDetectorView::~FaceDetectorView() {
 
 void* FaceDetectorView::RenderThreadFunc(void* arg) {
     FaceDetectorView* view = static_cast<FaceDetectorView*>(arg);
-    
+
     // Make the EGL context current in this thread
     if (!MakeContextCurrent()) {
         LOGE("Failed to make EGL context current in render thread");
         return nullptr;
     }
-    
+
     while (!view->shouldStopRendering_) {
         if (view->contextValid_) {
             view->RenderFrame();
@@ -81,10 +81,10 @@ void* FaceDetectorView::RenderThreadFunc(void* arg) {
         // Cap frame rate to ~60 FPS
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
     }
-    
+
     // Release the EGL context from this thread
     ReleaseContext();
-    
+
     return nullptr;
 }
 
@@ -118,13 +118,14 @@ void FaceDetectorView::nativeSurfaceCreated(
         height_ = ANativeWindow_getHeight(nativeWindow_);
         LOGI("Surface created: %dx%d", width_, height_);
 
+        InitWindow(width_, height_, "Test");
         if (InitWindowAndroid(nativeWindow_)) {
             contextValid_ = true;
             LOGI("Window initialized successfully");
-            
+
             // Release the EGL context from the main thread before starting render thread
             ReleaseContext();
-            
+
             StartRenderLoop();
         } else {
             LOGE("Failed to initialize window");
@@ -143,13 +144,13 @@ void FaceDetectorView::nativeSurfaceChanged(
     LOGI("Surface changed: %dx%d", width_, height_);
 
     RenderFrame();
- 
+
 }
 
 void FaceDetectorView::nativeSurfaceDestroyed(
     alias_ref<JSurface::javaobject> surface) {
     LOGI("Surface destroyed");
-    
+
     StopRenderLoop();
     contextValid_ = false;
 
@@ -159,7 +160,7 @@ void FaceDetectorView::nativeSurfaceDestroyed(
             ANativeWindow_release(nativeWindow_);
             nativeWindow_ = nullptr;
         }
-        
+
         // Release the context again
         ReleaseContext();
     }
@@ -174,14 +175,7 @@ void FaceDetectorView::RenderFrame() {
     BeginDrawing();
         ClearBackground(Color{20, 30, 40, 255});
 
-        // Set up the camera/view for 2D rendering
-        Camera2D camera = { 0 };
-        camera.offset = Vector2{0, 0};
-        camera.target = Vector2{0, 0};
-        camera.rotation = 0.0f;
-        camera.zoom = 1.0f;
 
-        BeginMode2D(camera);
             rotation += 2.0f;
             pulse = sinf(GetTime() * 2) * 10.0f;
 
@@ -199,7 +193,7 @@ void FaceDetectorView::RenderFrame() {
             }
 
             DrawRing(Vector2{(float)width_ / 2, (float)height_ / 2}, 140 + pulse, 150 + pulse, 0, 360, 60, Color{255, 100, 100, 128});
-        EndMode2D();
+
     EndDrawing();
 }
 
