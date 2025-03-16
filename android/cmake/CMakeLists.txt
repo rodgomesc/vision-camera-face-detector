@@ -18,10 +18,10 @@ find_package(fbjni REQUIRED CONFIG)
 
 add_library(${PACKAGE_NAME}
         SHARED
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../externals/raylib/src/rtext.c
         ${CMAKE_CURRENT_SOURCE_DIR}/../../externals/raylib/src/rcore.c
         ${CMAKE_CURRENT_SOURCE_DIR}/../../externals/raylib/src/rmodels.c
         ${CMAKE_CURRENT_SOURCE_DIR}/../../externals/raylib/src/rshapes.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../externals/raylib/src/rtext.c
         ${CMAKE_CURRENT_SOURCE_DIR}/../../externals/raylib/src/rtextures.c
         ${CMAKE_CURRENT_SOURCE_DIR}/../../externals/raylib/src/utils.c
 
@@ -54,4 +54,16 @@ target_link_libraries(
 # Define compiler macros for raylib
 target_compile_definitions(${PACKAGE_NAME} PRIVATE
         GRAPHICS_API_OPENGL_ES2
+        SUPPORT_DEFAULT_FONT=1
+        SUPPORT_MODULE_RTEXT=1
+        SUPPORT_FILEFORMAT_TTF=1
+        SUPPORT_TEXT_MANIPULATION=1
+        SUPPORT_FONT_ATLAS_WHITE_REC=1
+        SUPPORT_MODULE_RSHAPES=1
+        SUPPORT_FILEFORMAT_PNG=1
+        SUPPORT_IMAGE_MANIPULATION=1
+        SUPPORT_QUADS_DRAW_MODE=1
+        SUPPORT_STANDARD_FILEIO=1
+        SUPPORT_TRACELOG=1
+        SUPPORT_IMAGE_GENERATION=1
 )

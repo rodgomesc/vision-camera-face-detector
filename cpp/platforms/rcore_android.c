@@ -24,20 +24,6 @@
 #include "raylib.h"
 #include "rlgl.h"
 
-// Define Android log tag and log level mappings
-#define LOG_TAG "RaylibNative"
-#define LOG_LEVEL_DEBUG ANDROID_LOG_DEBUG
-#define LOG_LEVEL_INFO ANDROID_LOG_INFO
-#define LOG_LEVEL_WARNING ANDROID_LOG_WARN
-#define LOG_LEVEL_ERROR ANDROID_LOG_ERROR
-
-// Replace TRACELOG macro with Android logging
-#define TRACELOG(level, ...) ((void)__android_log_print(level == LOG_INFO ? LOG_LEVEL_INFO : \
-                                                       level == LOG_WARNING ? LOG_LEVEL_WARNING : \
-                                                       level == LOG_ERROR ? LOG_LEVEL_ERROR : \
-                                                       LOG_LEVEL_DEBUG, \
-                                                       LOG_TAG, __VA_ARGS__))
-
 //----------------------------------------------------------------------------------
 // Types and Structures Definition
 //----------------------------------------------------------------------------------
@@ -157,6 +143,11 @@ typedef struct CoreData {
 //----------------------------------------------------------------------------------
 extern CoreData CORE;   // Global CORE state context
 static PlatformData platform = { 0 };   // Platform specific data
+
+
+// Add font loading function declaration from rtext.c to rcore_android.c
+extern void LoadFontDefault(void);
+extern void UnloadFontDefault(void);
 
 
 //----------------------------------------------------------------------------------
@@ -397,6 +388,36 @@ bool InitWindowAndroid(ANativeWindow* nativeWindow)
 
         // Setup default viewport
         SetupViewport(CORE.Window.currentFbo.width, CORE.Window.currentFbo.height);
+
+
+
+        #if defined(SUPPORT_MODULE_RTEXT) && defined(SUPPORT_DEFAULT_FONT)
+            // Load default font
+            // WARNING: External function: Module required: rtext
+            LoadFontDefault();
+            #if defined(SUPPORT_MODULE_RSHAPES)
+                // Set font white rectangle for shapes drawing, so shapes and text can be batched together
+                // WARNING: rshapes module is required, if not available, default internal white rectangle is used
+                Rectangle rec = GetFontDefault().recs[95];
+                if (CORE.Window.flags & FLAG_MSAA_4X_HINT)
+                {
+                    // NOTE: We try to maxime rec padding to avoid pixel bleeding on MSAA filtering
+                    SetShapesTexture(GetFontDefault().texture, (Rectangle){ rec.x + 2, rec.y + 2, 1, 1 });
+                }
+                else
+                {
+                    // NOTE: We set up a 1px padding on char rectangle to avoid pixel bleeding
+                    SetShapesTexture(GetFontDefault().texture, (Rectangle){ rec.x + 1, rec.y + 1, rec.width - 2, rec.height - 2 });
+                }
+            #endif
+         #else
+            #if defined(SUPPORT_MODULE_RSHAPES)
+            // Set default texture and rectangle to be used for shapes drawing
+            // NOTE: rlgl default texture is a 1x1 pixel UNCOMPRESSED_R8G8B8A8
+            Texture2D texture = { rlGetTextureIdDefault(), 1, 1, 1, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8 };
+            SetShapesTexture(texture, (Rectangle){ 0.0f, 0.0f, 1.0f, 1.0f });    // WARNING: Module required: rshapes
+            #endif
+        #endif
 
         return true;
     }

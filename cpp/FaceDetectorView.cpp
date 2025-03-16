@@ -78,8 +78,8 @@ void* FaceDetectorView::RenderThreadFunc(void* arg) {
         if (view->contextValid_) {
             view->RenderFrame();
         }
-        // Cap frame rate to ~60 FPS
-        std::this_thread::sleep_for(std::chrono::milliseconds(16));
+       // Cap frame rate to ~60 FPS
+       std::this_thread::sleep_for(std::chrono::milliseconds(16));
     }
 
     // Release the EGL context from this thread
@@ -179,10 +179,21 @@ void FaceDetectorView::RenderFrame() {
             rotation += 2.0f;
             pulse = sinf(GetTime() * 2) * 10.0f;
 
+
             DrawCircleGradient(width_ / 2, height_ / 2, 200,
                            Color{100, 200, 255, 100},
                            Color{50, 100, 200, 50});
             DrawPoly(Vector2{(float)width_ / 2, (float)height_ / 2}, 6, 80 + pulse, rotation, Color{255, 200, 0, 200});
+
+            // Draw text on top of the circle
+            const char* text = TextFormat("FPS: %d", GetFPS());
+            int fontSize = 60;
+            Vector2 textSize = MeasureTextEx(GetFontDefault(), text, fontSize, 2);
+            DrawText(text,
+                    width_ / 2 - textSize.x / 2,  // Center horizontally
+                    height_ / 2 - 400 - textSize.y / 2,  // Center vertically
+                    fontSize,
+                    GREEN);
 
             for (int i = 0; i < 8; i++) {
                 float angle = rotation * DEG2RAD + (i * PI / 4);
